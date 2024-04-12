@@ -7,13 +7,10 @@ import {
   Title,
   Container,
   Button,
-  Space,
 } from "@mantine/core";
 import classes from "./Login.module.css";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useLogin } from "../../hooks/useLogin";
-import { useEmailExists } from "../../hooks/useEmailExists";
 import { emailExists } from "../../services/apiAuth";
 import { toast } from "react-hot-toast";
 import { useSetPassword } from "../../hooks/useSetPassword";
@@ -30,25 +27,8 @@ const Login = () => {
   const [showCreatePassword, setShowCreatePassword] = useState(false);
 
   const { login, isPending } = useLogin();
-  const { passwordSet, isSetPassword } = useSetPassword();
+  const { passwordSet } = useSetPassword();
 
-  const navigate = useNavigate();
-
-  const handleSubmit = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-
-    if (!email || !password) return;
-
-    login(
-      { email, password },
-      {
-        onSettled: () => {
-          setEmail("");
-          setPassword("");
-        },
-      }
-    );
-  };
   return (
     <Container size={420} my={40}>
       <Title ta="center" className={classes.title}>
