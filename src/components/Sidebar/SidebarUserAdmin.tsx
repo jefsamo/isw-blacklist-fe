@@ -1,15 +1,10 @@
 import { useState } from "react";
 import { Group, Code } from "@mantine/core";
 import {
-  // IconSettings,
-  // Icon2fa,
-  // IconDatabaseImport,
-
   IconLogout,
   IconDashboard,
   IconPlus,
   IconListDetails,
-  IconEditCircle,
 } from "@tabler/icons-react";
 import { Text } from "@mantine/core";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -18,14 +13,14 @@ import classes from "@pages/Dashboard/Dashboard.module.css";
 
 const data = [
   { link: "dashboard", label: "Dashboard", icon: IconDashboard },
+  { link: "users", label: "All Users", icon: IconListDetails },
   { link: "items", label: "All Items", icon: IconListDetails },
-  { link: "blacklist", label: "Manage Blacklist", icon: IconEditCircle },
-  { link: "new", label: "New Blacklist", icon: IconPlus },
+  { link: "create-user", label: "New User", icon: IconPlus },
 ];
 
-type Active = "Dashboard" | "All Items" | "Manage Blacklist" | "New Blacklist";
+type Active = "Dashboard" | "All Users" | "New User";
 
-const Sidebar = () => {
+const SidebarUserAdmin = () => {
   const [active, setActive] = useState<Active>("Dashboard");
   const navigate = useNavigate();
 
@@ -33,8 +28,6 @@ const Sidebar = () => {
     <NavLink
       className={classes.link}
       data-active={item.label === active || undefined}
-      // to={`/${currentUser?.userRole === "UserAdmin" ? "users" : item.link}`}
-      // key={window.location.pathname === "/users" ? "users" : item.label}
       to={`/${item.link}`}
       key={item.label}
       onClick={() => {
@@ -88,4 +81,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default SidebarUserAdmin;

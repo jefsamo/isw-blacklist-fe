@@ -1,0 +1,58 @@
+import axios from "axios";
+import { BASE_URL } from "../constants";
+
+export const getItems = async (token: string) => {
+  const res = await axios.get(
+    `${BASE_URL}/items/non-blacklisted-items-paginated`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return res.data;
+};
+export const getItemsTotal = async (token: string) => {
+  const res = await axios.get(`${BASE_URL}/items/all-items-paginated`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data;
+};
+
+export const getAllItems = async (token: string) => {
+  const res = await axios.get(`${BASE_URL}/items/all-items`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data;
+};
+
+export const getAllNonBlacklistedItems = async (token: string) => {
+  const res = await axios.get(`${BASE_URL}/items/non-blacklisted-items`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data;
+};
+
+export const checkValidToken = async (token: string) => {
+  const res = await axios.post(`${BASE_URL}/auth/validate-token`, token, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  return res.data;
+};

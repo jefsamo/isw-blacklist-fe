@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Avatar,
   Badge,
@@ -9,77 +11,79 @@ import {
   rem,
   Modal,
   Button,
-  TextInput,
-  NativeSelect,
-  Space,
+  Pagination,
+  Center,
+  Textarea,
+  Loader,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
-import { useNavigate } from "react-router-dom";
+import { IconPencil, IconTrash } from "@tabler/icons-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useGetAllBlacklistItem } from "../../hooks/useGetAllBlacklistItem";
+import { useGetAllBlacklist } from "../../hooks/useGetAllBlacklist";
+import { useState } from "react";
+// import { useDeleteBlacklist } from "../../hooks/useDeleteBlacklist";
+import { useRemoveBlacklist } from "../../hooks/useRemoveBlacklist";
 
-const data = [
-  {
-    avatar:
-      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-1.png",
-    name: "Robert Wolfkisser",
-    job: "Engineer",
-    email: "rob_wolf@gmail.com",
-    phone: "+44 (452) 886 09 12",
-    bookId: 1,
-  },
-  {
-    avatar:
-      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-7.png",
-    name: "Jill Jailbreaker",
-    job: "Engineer",
-    email: "jj@breaker.com",
-    phone: "+44 (934) 777 12 76",
-    bookId: 2,
-  },
-  {
-    avatar:
-      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-2.png",
-    name: "Henry Silkeater",
-    job: "Designer",
-    email: "henry@silkeater.io",
-    phone: "+44 (901) 384 88 34",
-    bookId: 3,
-  },
-  {
-    avatar:
-      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-3.png",
-    name: "Bill Horsefighter",
-    job: "Designer",
-    email: "bhorsefighter@gmail.com",
-    phone: "+44 (667) 341 45 22",
-    bookId: 4,
-  },
-  {
-    avatar:
-      "https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/avatars/avatar-10.png",
-    name: "Jeremy Footviewer",
-    job: "Manager",
-    email: "jeremy@foot.dev",
-    phone: "+44 (881) 245 65 65",
-    bookId: 5,
-  },
-];
+function chunk<T>(array: T[], size: number): T[][] {
+  if (!array.length) {
+    return [];
+  }
+  const head = array.slice(0, size);
+  const tail = array.slice(size);
+  return [head, ...chunk(tail, size)];
+}
 
 const jobColors: Record<string, string> = {
-  engineer: "blue",
-  manager: "cyan",
+  music: "blue",
+  books: "cyan",
   designer: "red",
 };
 
 const Manage = () => {
   const navigate = useNavigate();
   const [opened, { open, close }] = useDisclosure(false);
+  const [itemId, setItemId] = useState("");
+  const [reason, setReason] = useState("");
 
-  const rows = data.map((item) => (
-    <Table.Tr key={item.name}>
+  const currentUser = JSON.parse(localStorage.getItem("user")!);
+
+  const [searchParams] = useSearchParams();
+
+  const currentPage = !searchParams.get("page")
+    ? 1
+    : Number(searchParams.get("page"));
+
+  const [activePage, setPage] = useState(currentPage);
+
+  const {
+    // isLoading,
+    allBlacklistItems,
+  } = useGetAllBlacklistItem();
+  const { isLoading: isLoadingAllBlacklist, allBlacklistItemsTotal } =
+    useGetAllBlacklist();
+
+  // const { isPending: isLoadingDelete, deleteBlacklist } = useDeleteBlacklist();
+  const { isPending: isLoadingDelete, removeBlacklist } = useRemoveBlacklist();
+
+  const totalPages = allBlacklistItems?.data.totalPageCount;
+
+  const allBlacklistTotal = allBlacklistItemsTotal?.data;
+
+  const data2 = allBlacklistTotal ? chunk(allBlacklistTotal, 10) : [];
+
+  if (isLoadingAllBlacklist)
+    return (
+      <Center h={"100dvh"}>
+        <Loader />
+      </Center>
+    );
+
+  const rows = data2[activePage - 1]?.map((item: any) => (
+    <Table.Tr key={item.id}>
       <Table.Td>
         <Group gap="sm">
-          <Avatar size={30} src={item.avatar} radius={30} />
+          <Avatar size={30} src={item.imageUrl} radius={30} />
           <Text fz="sm" fw={500}>
             {item.name}
           </Text>
@@ -87,24 +91,24 @@ const Manage = () => {
       </Table.Td>
 
       <Table.Td>
-        <Badge color={jobColors[item.job.toLowerCase()]} variant="light">
-          {item.job}
+        <Badge color={jobColors[item.category]} variant="light">
+          {item.category}
         </Badge>
       </Table.Td>
       <Table.Td>
         <Anchor component="button" size="sm">
-          {item.email}
+          {item.price}
         </Anchor>
       </Table.Td>
       <Table.Td>
-        <Text fz="sm">{item.phone}</Text>
+        <Text fz="sm">{item.quantity}</Text>
       </Table.Td>
       <Table.Td>
         <Group gap={0} justify="flex-end">
           <ActionIcon variant="subtle" color="gray">
             <IconPencil
               onClick={() => {
-                navigate(`/book/${item.bookId}`);
+                navigate(`/blacklist/${item.id}`);
               }}
               style={{ width: rem(16), height: rem(16) }}
               stroke={1.5}
@@ -114,6 +118,10 @@ const Manage = () => {
             <IconTrash
               style={{ width: rem(16), height: rem(16) }}
               stroke={1.5}
+              onClick={() => {
+                open();
+                setItemId(item?.id);
+              }}
             />
           </ActionIcon>
         </Group>
@@ -127,40 +135,66 @@ const Manage = () => {
         <Table verticalSpacing="sm">
           <Table.Thead>
             <Table.Tr>
-              <Table.Th>Book</Table.Th>
               <Table.Th>Title</Table.Th>
-              <Table.Th>ISBN</Table.Th>
-              <Table.Th>Genre</Table.Th>
+              <Table.Th>Category</Table.Th>
+              <Table.Th>Price</Table.Th>
+              <Table.Th>Quantity</Table.Th>
               <Table.Th />
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>{rows}</Table.Tbody>
         </Table>
       </Table.ScrollContainer>
+
+      <Center ml={"-100"}>
+        <Pagination
+          total={totalPages}
+          value={activePage}
+          onChange={setPage}
+          mt="sm"
+        />
+      </Center>
       <Modal
         opened={opened}
         onClose={close}
-        title="New Blacklist Item"
+        title="Reason for removal from blacklist"
         centered
+        size="55%"
       >
-        <TextInput label="Title" placeholder="Title" />
-        <Space h="md" />
-        <NativeSelect label="Category" data={["Music", "Movies", "Books"]} />
-        <Space h="md" />
+        <Textarea
+          placeholder="Reason..."
+          m="0 0 30 0"
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+        />
         <Button
           variant="filled"
           style={{ display: "flex", marginLeft: "auto" }}
+          loading={isLoadingDelete}
+          onClick={(e) => {
+            e.preventDefault();
+
+            if (!reason) return;
+
+            removeBlacklist(
+              {
+                blacklistItemId: itemId,
+                reason,
+                token: currentUser?.jwToken,
+              },
+              {
+                onSettled: () => {
+                  setReason("");
+                  close();
+                  navigate("/items");
+                },
+              }
+            );
+          }}
         >
           Add
         </Button>
       </Modal>
-
-      <Button
-        leftSection={<IconPlus style={{ width: rem(16), height: rem(16) }} />}
-        onClick={open}
-      >
-        Add Blacklist
-      </Button>
     </div>
   );
 };

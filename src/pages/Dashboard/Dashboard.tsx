@@ -1,5 +1,4 @@
 import { Space } from "@mantine/core";
-import Chart from "./Chart";
 import { StatsGrid } from "./StatsGrid";
 
 const Dashboard = () => {

@@ -1,4 +1,5 @@
 import { Group, Paper, SimpleGrid, Text } from "@mantine/core";
+import { useUsers } from "../../hooks/useUsers";
 import {
   IconUserPlus,
   IconDiscount2,
@@ -8,6 +9,8 @@ import {
   IconLockCancel,
 } from "@tabler/icons-react";
 import classes from "./StatsGrid.module.css";
+import { useGetAllBlacklistItem } from "../../hooks/useGetAllBlacklistItem";
+import { useGetAllItemsTotal } from "../../hooks/useGetAllItemsTotal";
 
 const icons = {
   user: IconUserPlus,
@@ -16,14 +19,30 @@ const icons = {
   coin: IconLockCancel,
 };
 
-const data = [
-  { title: "All Books", icon: "receipt", value: "1,000", diff: 34 },
-  { title: "Blacklisted", icon: "coin", value: "72", diff: -13 },
-  { title: "All Users", icon: "discount", value: "745", diff: 18 },
-  { title: "New customers", icon: "user", value: "188", diff: -30 },
-] as const;
-
 export function StatsGrid() {
+  const { users } = useUsers()!;
+  const { allBlacklistItems } = useGetAllBlacklistItem();
+  const { itemsAll } = useGetAllItemsTotal();
+  console.log(itemsAll);
+  const allBlacklistItemsCount = allBlacklistItems?.data?.totalCount ?? "--";
+
+  const data = [
+    { title: "All Items", icon: "receipt", value: "1,000", diff: 34 },
+    {
+      title: "Blacklisted",
+      icon: "coin",
+      value: `${allBlacklistItemsCount}`,
+      diff: -13,
+    },
+    {
+      title: "All Users",
+      icon: "discount",
+      value: `${users?.data?.totalCount ?? "--"}`,
+      diff: 18,
+    },
+    { title: "New customers", icon: "user", value: "188", diff: -30 },
+  ] as const;
+  
   const stats = data.map((stat) => {
     const Icon = icons[stat.icon];
     const DiffIcon = stat.diff > 0 ? IconArrowUpRight : IconArrowDownRight;

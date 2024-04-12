@@ -2,13 +2,13 @@ import { Button, Modal, Text, Textarea } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useParams } from "react-router-dom";
 
-const Book = () => {
-  const { bookId } = useParams();
+const User = () => {
+  const { userId } = useParams();
   const [opened, { open, close }] = useDisclosure(false);
   return (
     <div>
-      <h2>Reason for Blacklist</h2>
-      <p> Book {bookId}</p>
+      <h2>User Details</h2>
+      <p> User {userId}</p>
 
       <Text m={"20 0"}>
         Lorem ipsum dolor, sit amet consectetur adipisicing elit. Excepturi quo
@@ -48,4 +48,4 @@ const Book = () => {
   );
 };
 
-export default Book;
+export default User;
