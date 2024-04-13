@@ -17,12 +17,14 @@ import { useSetPassword } from "../../hooks/useSetPassword";
 
 const Login = () => {
   const [email, setEmail] = useState("");
-  // const { isLoading, result } = useEmailExists(email);
-  // console.log(result);
+
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
+
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [count, setCount] = useState<number>(0);
 
   const [showCreatePassword, setShowCreatePassword] = useState(false);
 
@@ -83,10 +85,13 @@ const Login = () => {
             e.preventDefault();
 
             try {
+              setIsCheckingEmail(true);
               const res = await emailExists(email);
+
               console.log(res);
 
               if (res?.statusCode === 200) {
+                setIsCheckingEmail(false);
                 setShowPassword(true);
                 if (email && password) {
                   login(
@@ -100,7 +105,11 @@ const Login = () => {
                   );
                 }
               } else if (res?.statusCode === 204) {
-                toast.success("Create your password");
+                setIsCheckingEmail(false);
+                setCount((prevCount) => prevCount + 1);
+                if (count < 1) {
+                  toast.success("Create your password");
+                }
                 setShowCreatePassword(true);
                 if (email && newPassword && confirmNewPassword) {
                   passwordSet(
@@ -141,7 +150,7 @@ const Login = () => {
               }
             }
           }}
-          loading={isPending}
+          loading={isPending || isCheckingEmail}
         >
           Sign in
         </Button>
