@@ -24,9 +24,8 @@ const Login = () => {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
-  const [count, setCount] = useState<number>(0);
-
   const [showCreatePassword, setShowCreatePassword] = useState(false);
+  const [count, setCount] = useState<number>(0);
 
   const { login, isPending } = useLogin();
   const { passwordSet } = useSetPassword();
@@ -39,8 +38,6 @@ const Login = () => {
     try {
       setIsCheckingEmail(true);
       const res = await emailExists(email);
-
-      console.log(res);
 
       if (res?.statusCode === 200) {
         setIsCheckingEmail(false);

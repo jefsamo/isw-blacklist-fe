@@ -12,6 +12,12 @@ type CreateType = {
   userAdminId: string;
 };
 
+type UserType = {
+  firstName: string;
+  lastName: string;
+  imageUrl: string;
+};
+
 export const getUsers = async (token: string, page: number) => {
   const res = await axios.get(`${BASE_URL}/user?page=${page}`, {
     headers: {
@@ -63,6 +69,32 @@ export const createUser = async ({
       },
     }
   );
+
+  return res.data;
+};
+
+export const getUser = async (token: string, userId: string) => {
+  const res = await axios.get(`${BASE_URL}/user/userId?userId=${userId}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data;
+};
+
+export const updateUser = async (
+  token: string,
+  userId: string,
+  body: UserType
+) => {
+  const res = await axios.put(`${BASE_URL}/user?userId=${userId}`, body, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
   return res.data;
 };
