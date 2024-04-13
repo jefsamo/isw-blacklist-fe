@@ -31,6 +31,76 @@ const Login = () => {
   const { login, isPending } = useLogin();
   const { passwordSet } = useSetPassword();
 
+  const handleLoginOrSetPassword = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+
+    try {
+      setIsCheckingEmail(true);
+      const res = await emailExists(email);
+
+      console.log(res);
+
+      if (res?.statusCode === 200) {
+        setIsCheckingEmail(false);
+        setShowPassword(true);
+        if (email && password) {
+          login(
+            { email, password },
+            {
+              onSettled: () => {
+                setEmail("");
+                setPassword("");
+              },
+            }
+          );
+        }
+      } else if (res?.statusCode === 204) {
+        setIsCheckingEmail(false);
+        setCount((prevCount) => prevCount + 1);
+        if (count < 1) {
+          toast.success("Create your password");
+        }
+        setShowCreatePassword(true);
+        if (email && newPassword && confirmNewPassword) {
+          passwordSet(
+            {
+              email,
+              confirmPassword: confirmNewPassword,
+              newPassword,
+            },
+            {
+              onSettled: () => {
+                // toast.success("Password created successfully");
+                setShowCreatePassword(false);
+                setEmail("");
+                setConfirmNewPassword("");
+                setNewPassword("");
+              },
+            }
+          );
+
+          // window.location.reload();
+        }
+      } else if (res?.statusCode === 404) {
+        toast.error("User doesn't exist!");
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
+    } catch (error: any) {
+      // Handle the AxiosError
+      if (error.response && error.response.status === 400) {
+        // Handle 400 Bad Request error
+        toast.error("Email does not exist");
+      } else {
+        // Handle other errors
+        console.error("An unexpected error occurred:", error);
+        toast.error("An unexpected error occurred. Please try again later.");
+      }
+    }
+  };
+
   return (
     <Container size={420} my={40}>
       <Title ta="center" className={classes.title}>
@@ -83,72 +153,7 @@ const Login = () => {
           mt="xl"
           onClick={async (e) => {
             e.preventDefault();
-
-            try {
-              setIsCheckingEmail(true);
-              const res = await emailExists(email);
-
-              console.log(res);
-
-              if (res?.statusCode === 200) {
-                setIsCheckingEmail(false);
-                setShowPassword(true);
-                if (email && password) {
-                  login(
-                    { email, password },
-                    {
-                      onSettled: () => {
-                        setEmail("");
-                        setPassword("");
-                      },
-                    }
-                  );
-                }
-              } else if (res?.statusCode === 204) {
-                setIsCheckingEmail(false);
-                setCount((prevCount) => prevCount + 1);
-                if (count < 1) {
-                  toast.success("Create your password");
-                }
-                setShowCreatePassword(true);
-                if (email && newPassword && confirmNewPassword) {
-                  passwordSet(
-                    {
-                      email,
-                      confirmPassword: confirmNewPassword,
-                      newPassword,
-                    },
-                    {
-                      onSettled: () => {
-                        // toast.success("Password created successfully");
-                        setShowCreatePassword(false);
-                        setEmail("");
-                        setConfirmNewPassword("");
-                        setNewPassword("");
-                      },
-                    }
-                  );
-
-                  // window.location.reload();
-                }
-              } else if (res?.statusCode === 404) {
-                toast.error("User doesn't exist!");
-              } else {
-                toast.error("An unexpected error occurred.");
-              }
-            } catch (error: any) {
-              // Handle the AxiosError
-              if (error.response && error.response.status === 400) {
-                // Handle 400 Bad Request error
-                toast.error("Email does not exist");
-              } else {
-                // Handle other errors
-                console.error("An unexpected error occurred:", error);
-                toast.error(
-                  "An unexpected error occurred. Please try again later."
-                );
-              }
-            }
+            handleLoginOrSetPassword(e);
           }}
           loading={isPending || isCheckingEmail}
         >
