@@ -152,7 +152,7 @@ const Login = () => {
             handleLoginOrSetPassword(e);
           }}
           loading={isPending || isCheckingEmail}
-          disabled={email.length < 1}
+          disabled={!email}
         >
           Sign in
         </Button>
