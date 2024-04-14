@@ -33,7 +33,6 @@ const Login = () => {
   const handleLoginOrSetPassword = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    if (!email) return;
     e.preventDefault();
 
     try {
