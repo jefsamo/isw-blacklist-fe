@@ -66,6 +66,7 @@ const SidebarUser = () => {
           onClick={(event) => {
             event.preventDefault();
             localStorage.removeItem("user");
+            localStorage.removeItem("active");
             navigate("/login", { replace: true });
           }}
         >

@@ -20,7 +20,6 @@ const User = () => {
   const icon = <IconAt style={{ width: rem(16), height: rem(16) }} />;
 
   const { isLoading, user } = useUser();
-  console.log(user);
   const [userEmail, setUserEmail] = useState(user?.data.email ?? "");
   const [firstName, setFirstName] = useState(user?.data.firstName ?? "");
   const [lastName, setLastName] = useState(user?.data.lastName ?? "");
