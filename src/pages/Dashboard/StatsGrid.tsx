@@ -4,8 +4,6 @@ import {
   IconUserPlus,
   IconDiscount2,
   IconBook,
-  IconArrowUpRight,
-  IconArrowDownRight,
   IconLockCancel,
 } from "@tabler/icons-react";
 import classes from "./StatsGrid.module.css";
