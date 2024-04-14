@@ -26,8 +26,10 @@ export function StatsGrid() {
   console.log(itemsAll);
   const allBlacklistItemsCount = allBlacklistItems?.data?.totalCount ?? "--";
 
+  const totalItems = itemsAll?.data.totalCount ?? "--";
+
   const data = [
-    { title: "All Items", icon: "receipt", value: "1,000", diff: 34 },
+    { title: "All Items", icon: "receipt", value: `${totalItems}`, diff: 34 },
     {
       title: "Blacklisted",
       icon: "coin",
@@ -40,12 +42,12 @@ export function StatsGrid() {
       value: `${users?.data?.totalCount ?? "--"}`,
       diff: 18,
     },
-    { title: "New customers", icon: "user", value: "188", diff: -30 },
+    { title: "New customers", icon: "user", value: "--", diff: -30 },
   ] as const;
-  
+
   const stats = data.map((stat) => {
     const Icon = icons[stat.icon];
-    const DiffIcon = stat.diff > 0 ? IconArrowUpRight : IconArrowDownRight;
+    // const DiffIcon = stat.diff > 0 ? IconArrowUpRight : IconArrowDownRight;
 
     return (
       <Paper withBorder p="md" radius="md" key={stat.title}>
@@ -58,7 +60,7 @@ export function StatsGrid() {
 
         <Group align="flex-end" gap="xs" mt={25}>
           <Text className={classes.value}>{stat.value}</Text>
-          <Text
+          {/* <Text
             c={stat.diff > 0 ? "teal" : "red"}
             fz="sm"
             fw={500}
@@ -66,7 +68,7 @@ export function StatsGrid() {
           >
             <span>{stat.diff}%</span>
             <DiffIcon size="1rem" stroke={1.5} />
-          </Text>
+          </Text> */}
         </Group>
 
         <Text fz="xs" c="dimmed" mt={7}>
