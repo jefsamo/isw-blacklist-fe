@@ -33,6 +33,7 @@ const Login = () => {
   const handleLoginOrSetPassword = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
+    if (!email) return;
     e.preventDefault();
 
     try {
@@ -151,6 +152,7 @@ const Login = () => {
             handleLoginOrSetPassword(e);
           }}
           loading={isPending || isCheckingEmail}
+          disabled={email.length < 1}
         >
           Sign in
         </Button>
