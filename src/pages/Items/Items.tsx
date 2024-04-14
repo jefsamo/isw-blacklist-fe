@@ -22,6 +22,7 @@ import { useState } from "react";
 import { useItems } from "../../hooks/useItems";
 import { useBlacklistItem } from "../../hooks/useBlacklistItem";
 import { useGetAllNonBlacklistItem } from "../../hooks/useGetAllNonBlacklistItem";
+import { useGetAllItems } from "../../hooks/useGetAllItems";
 
 const jobColors: Record<string, string> = {
   music: "blue",
@@ -52,7 +53,7 @@ const Items = () => {
   const [activePage, setPage] = useState(currentPage);
 
   const { items, isLoading } = useItems()!;
-  // const { itemsAll, isLoading: isLoadingAllItems } = useGetAllItems()!;
+  const { isLoading: isLoadingAllItems } = useGetAllItems()!;
 
   const { allNonBlacklistItems } = useGetAllNonBlacklistItem()!;
 
@@ -65,8 +66,8 @@ const Items = () => {
 
   const totalPages = items?.data?.totalPageCount;
 
-  // if (isLoading || isLoadingAllItems)
-  if (isLoading)
+  // if (isLoading)
+  if (isLoading || isLoadingAllItems)
     return (
       <Center h={"100dvh"}>
         <Loader />

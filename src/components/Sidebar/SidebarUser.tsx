@@ -20,7 +20,8 @@ const data = [
 type Active = "Dashboard" | "All Users" | "New User";
 
 const SidebarUser = () => {
-  const [active, setActive] = useState<Active>("Dashboard");
+  const currentActive = localStorage.getItem("active") ?? "Dashboard";
+  const [active, setActive] = useState<string>(currentActive);
   const navigate = useNavigate();
 
   const links = data.map((item) => (
@@ -31,14 +32,10 @@ const SidebarUser = () => {
       key={item.label}
       onClick={() => {
         setActive(item.label as Active);
+        localStorage.setItem("active", item.label);
       }}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />
-      {/* <span>
-        {i === 2 && currentUser?.userRole === "UserAdmin" && "All Users"}
-        {i !== 2 && currentUser?.userRole === "RoleAdmin" && "All Users"}
-        {item.label}
-      </span> */}
       <span>{item.label}</span>
     </NavLink>
   ));

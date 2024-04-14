@@ -26,27 +26,23 @@ const data = [
 type Active = "Dashboard" | "All Items" | "Manage Blacklist" | "New Blacklist";
 
 const Sidebar = () => {
-  const [active, setActive] = useState<Active>("Dashboard");
+  const currentActive = localStorage.getItem("active") ?? "Dashboard";
+  const [active, setActive] = useState<string>(currentActive);
   const navigate = useNavigate();
 
   const links = data.map((item) => (
     <NavLink
       className={classes.link}
       data-active={item.label === active || undefined}
-      // to={`/${currentUser?.userRole === "UserAdmin" ? "users" : item.link}`}
-      // key={window.location.pathname === "/users" ? "users" : item.label}
       to={`/${item.link}`}
       key={item.label}
       onClick={() => {
         setActive(item.label as Active);
+        localStorage.setItem("active", item.label);
       }}
     >
       <item.icon className={classes.linkIcon} stroke={1.5} />
-      {/* <span>
-        {i === 2 && currentUser?.userRole === "UserAdmin" && "All Users"}
-        {i !== 2 && currentUser?.userRole === "RoleAdmin" && "All Users"}
-        {item.label}
-      </span> */}
+
       <span>{item.label}</span>
     </NavLink>
   ));
