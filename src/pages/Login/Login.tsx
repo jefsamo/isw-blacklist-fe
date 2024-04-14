@@ -82,6 +82,7 @@ const Login = () => {
         }
       } else if (res?.statusCode === 404) {
         toast.error("User doesn't exist!");
+        setIsCheckingEmail(false);
       } else {
         toast.error("An unexpected error occurred.");
       }
