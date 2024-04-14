@@ -4,6 +4,7 @@ import {
   IconLogout,
   IconDashboard,
   IconPlus,
+  IconEyePlus,
   IconListDetails,
 } from "@tabler/icons-react";
 import { Text } from "@mantine/core";
@@ -16,6 +17,7 @@ const data = [
   { link: "users", label: "All Users", icon: IconListDetails },
   { link: "items", label: "All Items", icon: IconListDetails },
   { link: "create-user", label: "New User", icon: IconPlus },
+  { link: "create-item", label: "New Item", icon: IconEyePlus },
 ];
 
 type Active = "Dashboard" | "All Users" | "New User";

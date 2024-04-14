@@ -166,6 +166,7 @@ const User = () => {
             style={{ marginTop: "20px" }}
             onClick={handleUpload}
             loading={isUploading}
+            disabled={!file}
           >
             Upload
           </Button>
