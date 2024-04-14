@@ -157,7 +157,7 @@ const Users = () => {
           </Anchor>
         </Table.Td>
         <Table.Td>
-          <Text fz="sm">{item.phone}</Text>
+          <Text fz="sm">{item.phone ?? "--"}</Text>
         </Table.Td>
         <Table.Td>
           <Group gap={0} justify="flex-end">

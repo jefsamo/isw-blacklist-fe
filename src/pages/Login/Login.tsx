@@ -77,12 +77,7 @@ const Login = () => {
               },
             }
           );
-
-          // window.location.reload();
         }
-      } else if (res?.statusCode === 404) {
-        toast.error("User doesn't exist!");
-        setIsCheckingEmail(false);
       } else {
         toast.error("An unexpected error occurred.");
       }
@@ -90,9 +85,11 @@ const Login = () => {
       // Handle the AxiosError
       if (error.response && error.response.status === 400) {
         // Handle 400 Bad Request error
+        setIsCheckingEmail(false);
         toast.error("Email does not exist");
       } else {
         // Handle other errors
+        setIsCheckingEmail(false);
         console.error("An unexpected error occurred:", error);
         toast.error("An unexpected error occurred. Please try again later.");
       }
