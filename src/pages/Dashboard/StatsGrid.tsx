@@ -21,7 +21,6 @@ export function StatsGrid() {
   const { users } = useUsers()!;
   const { allBlacklistItems } = useGetAllBlacklistItem();
   const { itemsAll } = useGetAllItemsTotal();
-  console.log(itemsAll);
   const allBlacklistItemsCount = allBlacklistItems?.data?.totalCount ?? "--";
 
   const totalItems = itemsAll?.data.totalCount ?? "--";
