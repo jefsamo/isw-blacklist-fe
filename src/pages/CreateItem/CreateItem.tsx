@@ -31,8 +31,8 @@ const CreateItem = () => {
   const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setImageUrl(e.target.value);
 
-  const canUpdate =
-    !name && !description && !price && !category && !quantity && !imageUrl;
+  // const canUpdate =
+  //   !name && !description && !price && !category && !quantity && !imageUrl;
 
   const handleUpload = async () => {
     if (file) {
@@ -65,7 +65,7 @@ const CreateItem = () => {
   ) => {
     e.preventDefault();
 
-    if (!name || !!description || !price || !category || !quantity || !imageUrl)
+    if (!name && !!description && !price && !category && !quantity && !imageUrl)
       return;
 
     createItem(
@@ -80,7 +80,7 @@ const CreateItem = () => {
       },
       {
         onSettled: () => {
-          navigate("/users");
+          navigate("/items");
         },
       }
     );
@@ -165,7 +165,7 @@ const CreateItem = () => {
       <Space h={10} />
       <Button
         loading={isPending}
-        disabled={canUpdate}
+        // disabled={canUpdate}
         onClick={(e) => {
           handleCreateItem(e);
         }}

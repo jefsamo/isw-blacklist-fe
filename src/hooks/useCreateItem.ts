@@ -41,7 +41,7 @@ export const useCreateItem = () => {
     onSuccess: () => {
       toast.success("Item created sucessfully");
       queryClient.invalidateQueries({
-        queryKey: ["items-all-total"],
+        queryKey: ["items-all"],
       });
       // navigate("/items");
     },
