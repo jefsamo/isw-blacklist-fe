@@ -72,7 +72,7 @@ export const createItem = async ({
       },
     }
   );
-
+  // console.log(res);
   return res.data;
 };
 
