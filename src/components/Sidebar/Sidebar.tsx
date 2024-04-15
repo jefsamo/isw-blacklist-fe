@@ -1,13 +1,8 @@
 import { useState } from "react";
 import { Group, Code } from "@mantine/core";
 import {
-  // IconSettings,
-  // Icon2fa,
-  // IconDatabaseImport,
-
   IconLogout,
   IconDashboard,
-  IconPlus,
   IconListDetails,
   IconEditCircle,
 } from "@tabler/icons-react";
@@ -20,10 +15,9 @@ const data = [
   { link: "dashboard", label: "Dashboard", icon: IconDashboard },
   { link: "items", label: "All Items", icon: IconListDetails },
   { link: "blacklist", label: "Manage Blacklist", icon: IconEditCircle },
-  { link: "new", label: "New Blacklist", icon: IconPlus },
 ];
 
-type Active = "Dashboard" | "All Items" | "Manage Blacklist" | "New Blacklist";
+type Active = "Dashboard" | "All Items" | "Manage Blacklist";
 
 const Sidebar = () => {
   const currentActive = localStorage.getItem("active") ?? "Dashboard";
