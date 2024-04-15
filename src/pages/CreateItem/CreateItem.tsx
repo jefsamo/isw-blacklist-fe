@@ -170,7 +170,7 @@ const CreateItem = () => {
           handleCreateItem(e);
         }}
       >
-        Add user
+        Add item
       </Button>
     </div>
   );
