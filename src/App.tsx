@@ -15,6 +15,7 @@ import User from "@pages/User/User";
 import CreateUser from "@pages/CreateUser/CreateUser";
 import Blacklist from "@pages/Blacklist/Blacklist";
 import CreateItem from "@pages/CreateItem/CreateItem";
+import CreateblacklistItem from "@pages/CreateItem/CreateItem";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,6 +50,7 @@ function App() {
             <Route path="create-user" element={<CreateUser />} />
             <Route path="create-item" element={<CreateItem />} />
           </Route>
+          <Route path="CreateblacklistItem" element={<CreateblacklistItem/>}/>
           <Route path="login" element={<Login />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
