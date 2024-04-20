@@ -52,19 +52,19 @@ const ItemsonDashboard = () => {
 
   const [activePage, setPage] = useState(currentPage);
 
-  const { items, isLoading } = useItems()!;
+  const { itemsAll, isLoading } = useGetAllItems()!;
   const { isLoading: isLoadingAllItems } = useGetAllItems()!;
 
   const { allNonBlacklistItems } = useGetAllNonBlacklistItem()!;
-
-  const totalItems = allNonBlacklistItems?.data;
+  
+  const totalItems = itemsAll?.data;
 
   const data2 = totalItems ? chunk(totalItems, 10) : [];
 
   const currentUser = JSON.parse(localStorage.getItem("user")!);
   const { isPending, createBlacklist } = useBlacklistItem();
 
-  const totalPages = items?.data?.totalPageCount;
+  const totalPages = itemsAll?.data?.totalPageCount;
 
   // if (isLoading)
   if (isLoading || isLoadingAllItems)
@@ -75,7 +75,7 @@ const ItemsonDashboard = () => {
     );
 
   const rows = data2[activePage - 1]?.map((item: any) => (
-    <Table.Tr key={item.id}>
+    <Table.Tr key={item.id} style={{ opacity: item.removalReason ? 0.5 : 1 }}>
       <>
         <Table.Td>
           <Group gap="sm">
@@ -98,6 +98,11 @@ const ItemsonDashboard = () => {
         </Table.Td>
         <Table.Td>
           <Text fz="sm">{item.quantity}</Text>
+        </Table.Td>
+        <Table.Td style={{ opacity: item.removalReason ? 0.5 : 0 }}>
+          <Badge color="red" variant="light">
+           Blacklisted
+          </Badge>
         </Table.Td>
         <Table.Td>
           {currentUser?.userRole !== "User" &&
@@ -131,6 +136,7 @@ const ItemsonDashboard = () => {
 
   return (
     <div style={{ padding: "0 10px" }}>
+    
       <Table.ScrollContainer minWidth={800}>
         <Table verticalSpacing="sm">
           <Table.Thead>
@@ -195,6 +201,7 @@ const ItemsonDashboard = () => {
           Add
         </Button>
       </Modal>
+
     </div>
   );
 };
