@@ -14,7 +14,7 @@ import User from "@pages/User/User";
 import CreateUser from "@pages/CreateUser/CreateUser";
 import Blacklist from "@pages/Blacklist/Blacklist";
 import CreateItem from "@pages/CreateItem/CreateItem";
-import CreateblacklistItem from "@pages/CreateblacklistItem/CreateblacklistItem";
+import CreateblacklistItem from "@pages/Createblacklist_item/Createblacklist_item";
 
 const queryClient = new QueryClient({
   defaultOptions: {

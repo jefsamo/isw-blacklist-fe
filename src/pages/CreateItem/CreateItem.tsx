@@ -13,7 +13,7 @@ import axios from "axios";
 import { BASE_URL } from "../../constants";
 import { useNavigate } from "react-router-dom";
 
-const CreateblacklistItem = () => {
+const CreateItem = () => {
   const { isPending, createItem } = useCreateItem();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -176,4 +176,4 @@ const CreateblacklistItem = () => {
   );
 };
 
-export default CreateblacklistItem;
+export default CreateItem;
