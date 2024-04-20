@@ -3,6 +3,7 @@ import {
   Button,
   FileButton,
   InputBase,
+  Select,
   Space,
   Text,
   TextInput,
@@ -21,18 +22,28 @@ const CreateItem = () => {
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
+  const [reason, setReason] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [newCategory, setNewCategory] = useState("");
+  const currentUser = JSON.parse(localStorage.getItem("user")!);
   const navigate = useNavigate();
 
-  const [isUploading, setIsUploading] = useState(false);
+  const handleImageUrlChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => setImageUrl(e.target.value);
 
-  const [file, setFile] = useState<File | null>(null);
-  const currentUser = JSON.parse(localStorage.getItem("user")!);
+  const handleCategoryChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setSelectedCategory(e.target.value);
+    setCategory(e.target.value);
+  };
 
-  const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setImageUrl(e.target.value);
-
-  // const canUpdate =
-  //   !name && !description && !price && !category && !quantity && !imageUrl;
+  const handleNewCategoryChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => setNewCategory(e.target.value);
 
   const handleUpload = async () => {
     if (file) {
@@ -65,7 +76,14 @@ const CreateItem = () => {
   ) => {
     e.preventDefault();
 
-    if (!name && !!description && !price && !category && !quantity && !imageUrl)
+    if (
+      !name ||
+      !description ||
+      !price ||
+      !category ||
+      !quantity ||
+      !imageUrl
+    )
       return;
 
     createItem(
@@ -77,6 +95,7 @@ const CreateItem = () => {
         price,
         quantity,
         token: currentUser?.jwToken,
+        reason, // Include reason for blacklisting
       },
       {
         onSettled: () => {
@@ -109,12 +128,29 @@ const CreateItem = () => {
         onChange={(e) => setPrice(+e.target.value)}
       />
       <Space h={10} />
-      <InputBase
+      <Select
         label="Category"
-        placeholder="Category"
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
+        placeholder="Select a category or enter a new one"
+        value={selectedCategory || newCategory}
+        onChange={handleCategoryChange}
+        data={[
+          { label: "Electronics", value: "Electronics" },
+          { label: "Clothing", value: "Clothing" },
+          { label: "Books", value: "Books" },
+          { label: "Others", value: "Others" },
+        ]}
       />
+      {selectedCategory === "Others" && (
+        <>
+          <Space h={10} />
+          <InputBase
+            label="New Category"
+            placeholder="Enter new category"
+            value={newCategory}
+            onChange={handleNewCategoryChange}
+          />
+        </>
+      )}
       <Space h={10} />
       <InputBase
         label="Quantity"
@@ -161,11 +197,16 @@ const CreateItem = () => {
           </Button>
         </div>
       </div>
-
+      <Space h={10} />
+      <InputBase
+        label="Reason for Blacklisting"
+        placeholder="Enter reason"
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+      />
       <Space h={10} />
       <Button
         loading={isPending}
-        // disabled={canUpdate}
         onClick={(e) => {
           handleCreateItem(e);
         }}
