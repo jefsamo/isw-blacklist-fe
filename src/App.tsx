@@ -16,6 +16,7 @@ import CreateUser from "@pages/CreateUser/CreateUser";
 import Blacklist from "@pages/Blacklist/Blacklist";
 import CreateItem from "@pages/CreateItem/CreateItem";
 import CreateblacklistItem from "@pages/Createblacklist_item/Createblacklist_item";
+import ItemsonDashboard from "@pages/Items/Itemsondashboard";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,6 +44,7 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="blacklist" element={<Manage />} />
             <Route path="blacklist/:blacklistItemId" element={<Blacklist />} />
+            <Route path="itemsonDashboard" element={<ItemsonDashboard />} />
             <Route path="items" element={<Items />} />
             <Route path="item/:itemId" element={<Item />} />
             <Route path="users" element={<Users />} />
