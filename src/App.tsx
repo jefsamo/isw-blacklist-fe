@@ -1,5 +1,5 @@
 import Dashboard from "@pages/Dashboard/Dashboard";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./ui/AppLayout";
 import Manage from "@pages/Manage/Manage";
 import Items from "@pages/Items/Items";
@@ -9,6 +9,7 @@ import Login from "@pages/Login/Login";
 import Item from "@pages/Item/Item";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import ProtectedRoute from "./ui/ProtectedRoute";
 import { Toaster } from "react-hot-toast";
 import User from "@pages/User/User";
 import CreateUser from "@pages/CreateUser/CreateUser";
@@ -30,8 +31,14 @@ function App() {
       <ReactQueryDevtools initialIsOpen={false} />
       <BrowserRouter>
         <Routes>
-          <Route index element={<Dashboard />} />
-          <Route element={<AppLayout />}>
+          <Route index element={<Navigate replace to="dashboard" />} />
+          <Route
+            element={
+              <ProtectedRoute>
+                <AppLayout />
+              </ProtectedRoute>
+            }
+          >
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="blacklist" element={<Manage />} />
             <Route path="blacklist/:blacklistItemId" element={<Blacklist />} />
@@ -39,10 +46,12 @@ function App() {
             <Route path="item/:itemId" element={<Item />} />
             <Route path="users" element={<Users />} />
             <Route path="user/:userId" element={<User />} />
+
             <Route path="create-user" element={<CreateUser />} />
             <Route path="create-item" element={<CreateItem />} />
-            <Route path="create-blacklist-item" element={<CreateblacklistItem />} />
           </Route>
+          <Route path="CreateblacklistItem" element={<CreateblacklistItem/>}/>if
+          <Route path="login" element={<Login />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

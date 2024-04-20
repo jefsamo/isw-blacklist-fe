@@ -14,7 +14,7 @@ const ProtectedRoute = ({ children }: Props) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!currentUser || validUser?.statusCode === 400) navigate("/login");
+    if (!currentUser || validUser?.statusCode === 400) navigate("/CreateblacklistItem");
   }, [navigate, currentUser, validUser]);
 
   return children;

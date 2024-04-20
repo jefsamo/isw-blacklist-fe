@@ -1,18 +1,18 @@
+import React, { useState } from "react";
 import {
   Badge,
   Button,
   FileButton,
   InputBase,
-  Select,
   Space,
   Text,
   TextInput,
+  Select,
 } from "@mantine/core";
 import { useCreateItem } from "../../hooks/useCreateItem";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../constants";
-import { useNavigate } from "react-router-dom";
 
 const CreateblacklistItem = () => {
   const { isPending, createItem } = useCreateItem();
@@ -20,30 +20,17 @@ const CreateblacklistItem = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
   const [category, setCategory] = useState("");
+  const [newCategory, setNewCategory] = useState("");
   const [quantity, setQuantity] = useState(0);
   const [imageUrl, setImageUrl] = useState("");
-  const [reason, setReason] = useState("");
-  const [isUploading, setIsUploading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [newCategory, setNewCategory] = useState("");
-  const currentUser = JSON.parse(localStorage.getItem("user")!);
+  const [isUploading, setIsUploading] = useState(false);
+  const [reason, setReason] = useState("");
   const navigate = useNavigate();
+  const currentUser = JSON.parse(localStorage.getItem("user")!);
 
-  const handleImageUrlChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => setImageUrl(e.target.value);
-
-  const handleCategoryChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setSelectedCategory(e.target.value);
-    setCategory(e.target.value);
-  };
-
-  const handleNewCategoryChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => setNewCategory(e.target.value);
+  const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setImageUrl(e.target.value);
 
   const handleUpload = async () => {
     if (file) {
@@ -76,26 +63,18 @@ const CreateblacklistItem = () => {
   ) => {
     e.preventDefault();
 
-    if (
-      !name ||
-      !description ||
-      !price ||
-      !category ||
-      !quantity ||
-      !imageUrl
-    )
+    if (!name || !description || !price || !category || !quantity || !imageUrl)
       return;
 
     createItem(
       {
-        category,
+        category: category === "Other" ? newCategory : category,
         description,
         imageUrl,
         name,
         price,
         quantity,
         token: currentUser?.jwToken,
-        reason, // Include reason for blacklisting
       },
       {
         onSettled: () => {
@@ -125,37 +104,46 @@ const CreateblacklistItem = () => {
         label="Price"
         placeholder="Price"
         value={price}
+        type="number"
         onChange={(e) => setPrice(+e.target.value)}
       />
       <Space h={10} />
       <Select
         label="Category"
-        placeholder="Select a category or enter a new one"
-        value={selectedCategory || newCategory}
-        onChange={handleCategoryChange}
+        placeholder="Select category"
+        value={category}
+        onChange={(value) => setCategory(value as string)}
         data={[
-          { label: "Electronics", value: "Electronics" },
-          { label: "Clothing", value: "Clothing" },
-          { label: "Books", value: "Books" },
-          { label: "Others", value: "Others" },
+          { value: "new_category", label: "new_category" },
+          { value: "Electronics", label: "Electronics" },
+          { value: "Clothing", label: "Clothing" },
+          { value: "Books", label: "Books" },
         ]}
       />
-      {selectedCategory === "Others" && (
+      {category === "new_category" && (
         <>
           <Space h={10} />
           <InputBase
-            label="New Category"
-            placeholder="Enter new category"
+            label="Enter New Category"
+            placeholder="New Category"
             value={newCategory}
-            onChange={handleNewCategoryChange}
+            onChange={(e) => setNewCategory(e.target.value)}
           />
         </>
       )}
+     <Space h={10} />
+      <InputBase
+        label="Reason for Blacklisting"
+        placeholder="Reason for blacklisting..."
+        value={reason}
+        onChange={(e) => setReason(e.target.value)}
+      />
       <Space h={10} />
       <InputBase
         label="Quantity"
         placeholder="Quantity"
         value={quantity}
+        type="number"
         onChange={(e) => setQuantity(+e.target.value)}
       />
       <Space h={10} />
@@ -178,7 +166,7 @@ const CreateblacklistItem = () => {
                 color="blue"
                 style={{ marginTop: "20px", cursor: "pointer" }}
               >
-                choose photo
+                Choose photo
               </Badge>
             )}
           </FileButton>
@@ -197,21 +185,10 @@ const CreateblacklistItem = () => {
           </Button>
         </div>
       </div>
+
       <Space h={10} />
-      <InputBase
-        label="Reason for Blacklisting"
-        placeholder="Enter reason"
-        value={reason}
-        onChange={(e) => setReason(e.target.value)}
-      />
-      <Space h={10} />
-      <Button
-        loading={isPending}
-        onClick={(e) => {
-          handleCreateItem(e);
-        }}
-      >
-        Add item
+      <Button loading={isPending} onClick={handleCreateItem}>
+        Add Item
       </Button>
     </div>
   );
