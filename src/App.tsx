@@ -34,9 +34,10 @@ function App() {
           <Route index element={<Navigate replace to="dashboard" />} />
           <Route
             element={
-              <ProtectedRoute>
+              
+             <ProtectedRoute>
                 <AppLayout />
-              </ProtectedRoute>
+            </ProtectedRoute>
             }
           >
             <Route path="dashboard" element={<Dashboard />} />
@@ -46,11 +47,11 @@ function App() {
             <Route path="item/:itemId" element={<Item />} />
             <Route path="users" element={<Users />} />
             <Route path="user/:userId" element={<User />} />
-
+            <Route path="CreateblacklistItem" element={<CreateblacklistItem/>}/>
             <Route path="create-user" element={<CreateUser />} />
             <Route path="create-item" element={<CreateItem />} />
           </Route>
-          <Route path="CreateblacklistItem" element={<CreateblacklistItem/>}/>if
+         
           <Route path="login" element={<Login />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
