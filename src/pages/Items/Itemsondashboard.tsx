@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Avatar,
   Badge,
-  Table,
+  Card,
   Group,
   Text,
   ActionIcon,
@@ -14,6 +13,7 @@ import {
   Pagination,
   Center,
   Loader,
+  Space,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPencil, IconArchive } from "@tabler/icons-react";
@@ -39,7 +39,111 @@ function chunk<T>(array: T[], size: number): T[][] {
   return [head, ...chunk(tail, size)];
 }
 
-const ItemsonDashboard = () => {
+type Item = {
+  id: string;
+  imageUrl: string;
+  name: string;
+  category: string;
+  price: string;
+  quantity: number;
+  removalReason?: string;
+};
+
+type ItemsonDashboardProps = {};
+
+const ItemCard = ({ item, navigate, openModal }: { item: Item; navigate: any; openModal: (id: string) => void }) => (
+  <Card
+    shadow="xs"
+    padding="md"
+    style={{ marginBottom: "20px", width: "250px", height: "300px", transition: "transform 0.3s", cursor: "pointer", opacity: item.removalReason ? 0.5 : 1 }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = "scale(1.05)";
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = "scale(1)";
+    }}
+    onClick={() => {
+      if (item.removalReason) {
+        navigate(`/item/${item.id}`);
+      } else {
+        openModal(item.id);
+      }
+    }}
+  >
+    <div style={{ height: "70%", overflow: "hidden" }}>
+      <img src={item.imageUrl} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+    </div>
+    <Space h={10}/>
+    <div style={{ height: "30%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+      <div>
+        <Text fz="sm" fw={500}>
+          {item.name}
+        </Text>
+        <Space h={5}/>
+        <Badge color={jobColors[item.category]} variant="light">
+          {item.category}
+        </Badge>
+      </div>
+      <div>
+        {item.removalReason && (
+          <Badge color="red" variant="light">
+            Blacklisted
+          </Badge>
+        )}
+      </div>
+    </div>
+  </Card>
+);
+
+const ItemDescription = ({ item, close }: { item: Item; close: () => void }) => (
+  <Modal
+    opened={true}
+    onClose={close}
+    title={item.name}
+    centered
+    size="55%"
+  >
+    <div style={{ display: "flex" }}>
+      <div style={{ flex: 1, height: "100%", overflow: "hidden" }}>
+        <img src={item.imageUrl} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+      </div>
+      <Space w={20}/>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <div>
+          <Text fz="sm" fw={500}>
+            {item.name}
+          </Text>
+          <Space h={5}/>
+          <Badge color={jobColors[item.category]} variant="light">
+            {item.category}
+          </Badge>
+        </div>
+        <Space h={5}/>
+        <div>
+        <Text fz="sm" fw={500}>Price:</Text> 
+          <Anchor component="button" size="sm">
+        {item.price}
+          </Anchor>
+        </div>
+        <Space h={5}/>
+        <div>
+        <Text fz="sm" fw={500}>Quantity:</Text> 
+          <Text fz="sm">{item.quantity}</Text>
+        </div>
+        <div>
+          {item.removalReason && (
+            <Badge color="red" variant="light">
+              Blacklisted
+            </Badge>
+          )}
+        </div>
+      </div>
+    </div>
+  </Modal>
+);
+
+
+const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
   const navigate = useNavigate();
   const [opened, { open, close }] = useDisclosure(false);
   const [reason, setReason] = useState("");
@@ -50,12 +154,10 @@ const ItemsonDashboard = () => {
     ? 1
     : Number(searchParams.get("page"));
 
-  const [activePage, setPage] = useState(currentPage);
+  const [activePage, setActivePage] = useState(currentPage);
 
-  const { itemsAll, isLoading } = useGetAllItems()!;
-  const { isLoading: isLoadingAllItems } = useGetAllItems()!;
-
-  const { allNonBlacklistItems } = useGetAllNonBlacklistItem()!;
+  const { itemsAll, isLoading: isLoadingItems } = useGetAllItems()!;
+  const { allNonBlacklistItems, isLoading: isLoadingNonBlacklistItems } = useGetAllNonBlacklistItem()!;
   
   const totalItems = itemsAll?.data;
 
@@ -66,99 +168,43 @@ const ItemsonDashboard = () => {
 
   const totalPages = itemsAll?.data?.totalPageCount;
 
-  // if (isLoading)
-  if (isLoading || isLoadingAllItems)
+  if (isLoadingItems || isLoadingNonBlacklistItems)
     return (
       <Center h={"100dvh"}>
         <Loader />
       </Center>
     );
 
-  const rows = data2[activePage - 1]?.map((item: any) => (
-    <Table.Tr key={item.id} style={{ opacity: item.removalReason ? 0.5 : 1 }}>
-      <>
-        <Table.Td>
-          <Group gap="sm">
-            <Avatar size={30} src={item.imageUrl} radius={30} />
-            <Text fz="sm" fw={500}>
-              {item?.name}
-            </Text>
-          </Group>
-        </Table.Td>
+  const openModal = (id: string) => {
+    const item = totalItems.find((item: Item) => item.id === id);
+    setItemId(id);
+    open();
+  };
 
-        <Table.Td>
-          <Badge color={jobColors[item.category]} variant="light">
-            {item?.category}
-          </Badge>
-        </Table.Td>
-        <Table.Td>
-          <Anchor component="button" size="sm">
-            {item?.price}
-          </Anchor>
-        </Table.Td>
-        <Table.Td>
-          <Text fz="sm">{item.quantity}</Text>
-        </Table.Td>
-        <Table.Td style={{ opacity: item.removalReason ? 0.5 : 0 }}>
-          <Badge color="red" variant="light">
-           Blacklisted
-          </Badge>
-        </Table.Td>
-        <Table.Td>
-          {currentUser?.userRole !== "User" &&
-            currentUser?.userRole !== "UserAdmin" && (
-              <Group gap={0} justify="flex-end">
-                <ActionIcon variant="subtle" color="gray">
-                  <IconPencil
-                    onClick={() => {
-                      navigate(`/item/${item.id}`);
-                    }}
-                    style={{ width: rem(16), height: rem(16) }}
-                    stroke={1.5}
-                  />
-                </ActionIcon>
-                <ActionIcon variant="subtle" color="red">
-                  <IconArchive
-                    style={{ width: rem(16), height: rem(16) }}
-                    stroke={1.5}
-                    onClick={() => {
-                      open();
-                      setItemId(item?.id);
-                    }}
-                  />
-                </ActionIcon>
-              </Group>
-            )}
-        </Table.Td>
-      </>
-    </Table.Tr>
+  const rows = data2[activePage - 1]?.map((item: any) => (
+    <ItemCard
+      key={item.id}
+      item={item}
+      navigate={navigate}
+      openModal={openModal}
+    />
   ));
 
   return (
     <div style={{ padding: "0 10px" }}>
     
-      <Table.ScrollContainer minWidth={800}>
-        <Table verticalSpacing="sm">
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Title</Table.Th>
-              <Table.Th>Category</Table.Th>
-              <Table.Th>Price</Table.Th>
-              <Table.Th>Quantity</Table.Th>
-              <Table.Th />
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>{rows}</Table.Tbody>
-        </Table>
-      </Table.ScrollContainer>
+      <div style={{ marginBottom: "20px", display: "flex", flexWrap: "wrap", gap: "20px" }}>{rows}</div>
+
       <Center ml={"-100"}>
         <Pagination
           total={totalPages}
           value={activePage}
-          onChange={setPage}
+          onChange={setActivePage}
           mt="sm"
         />
       </Center>
+
+      {opened && <ItemDescription item={totalItems.find((item: Item) => item.id === itemId)!} close={close} />}
 
       <Modal
         opened={opened}
