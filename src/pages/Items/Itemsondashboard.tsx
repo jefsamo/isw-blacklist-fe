@@ -105,7 +105,7 @@ const ItemDescription = ({ item, close }: { item: Item; close: () => void }) => 
   >
     <div style={{ display: "flex" }}>
       <div style={{ flex: 1, height: "100%", overflow: "hidden" }}>
-        <img src={item.imageUrl} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        <img src={item.imageUrl} alt={item.name} style={{ width: "100%", objectFit: "cover", height: "100%", minHeight: "300px" }} />
       </div>
       <Space w={20}/>
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -141,6 +141,7 @@ const ItemDescription = ({ item, close }: { item: Item; close: () => void }) => 
     </div>
   </Modal>
 );
+
 
 
 const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
