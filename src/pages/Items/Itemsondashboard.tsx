@@ -115,6 +115,7 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
   const [filter, setFilter] = useState("");
   const [filteredData, setFilteredData] = useState<Item[][]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const { itemsAll, isLoading: isLoadingItems } = useGetAllItems()!;
   const {
@@ -132,12 +133,13 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
     );
     setFilteredData(chunk(filteredItems, 10));
     setCurrentPage(1); // Reset to the first page when filter changes
+    setTotalPages(Math.ceil(filteredItems.length / 10)); // Recalculate total pages
   }, [totalItems, filter]);
+  
+  //...
 
   const currentUser = JSON.parse(localStorage.getItem("user")!);
   const { isPending, createBlacklist } = useBlacklistItem();
-
-  const totalPages = itemsAll?.data?.totalPageCount;
 
   if (isLoadingItems || isLoadingNonBlacklistItems)
     return (
@@ -261,9 +263,13 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
   };
 
   const handlePageChange = (page: number) => {
+    const here ='5'
     setCurrentPage(page);
-    navigate(`?page=${page}`);
+    const params = new URLSearchParams(searchParams);
+    params.set('page', String(page));
+    navigate(`?${params.toString()}`);
   };
+  
 
   const generateBackground = (name: string) => {
     const firstLetters = name.slice(0, 5).toUpperCase();
