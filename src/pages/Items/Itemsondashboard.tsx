@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   Avatar,
   Badge,
@@ -14,11 +15,11 @@ import {
   Center,
   Loader,
   Space,
+  InputBase,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconPencil, IconArchive } from "@tabler/icons-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useState } from "react";
 import { useItems } from "../../hooks/useItems";
 import { useBlacklistItem } from "../../hooks/useBlacklistItem";
 import { useGetAllNonBlacklistItem } from "../../hooks/useGetAllNonBlacklistItem";
@@ -51,98 +52,59 @@ type Item = {
 
 type ItemsonDashboardProps = {};
 
-const ItemCard = ({ item, navigate, openModal }: { item: Item; navigate: any; openModal: (id: string) => void }) => (
-  <Card
-    shadow="xs"
-    padding="md"
-    style={{ marginBottom: "20px", width: "250px", height: "300px", transition: "transform 0.3s", cursor: "pointer", opacity: item.removalReason ? 0.5 : 1 }}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.transform = "scale(1.05)";
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.transform = "scale(1)";
-    }}
-    onClick={() => {
-      if (item.removalReason) {
-        navigate(`/item/${item.id}`);
-      } else {
-        openModal(item.id);
-      }
-    }}
-  >
-    <div style={{ height: "70%", overflow: "hidden" }}>
-      <img src={item.imageUrl} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-    </div>
-    <Space h={10}/>
-    <div style={{ height: "30%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-      <div>
-        <Text fz="sm" fw={500}>
-          {item.name}
-        </Text>
-        <Space h={5}/>
-        <Badge color={jobColors[item.category]} variant="light">
-          {item.category}
-        </Badge>
-      </div>
-      <div>
-        {item.removalReason && (
-          <Badge color="red" variant="light">
-            Blacklisted
-          </Badge>
-        )}
-      </div>
-    </div>
-  </Card>
-);
-
 const ItemDescription = ({ item, close }: { item: Item; close: () => void }) => (
-  <Modal
-    opened={true}
-    onClose={close}
-    title={item.name}
-    centered
-    size="55%"
-  >
+  <Modal opened={true} onClose={close} title={item.name} centered size="55%">
     <div style={{ display: "flex" }}>
       <div style={{ flex: 1, height: "100%", overflow: "hidden" }}>
-        <img src={item.imageUrl} alt={item.name} style={{ width: "100%", objectFit: "cover", height: "100%", minHeight: "300px" }} />
+        <img
+          src={item.imageUrl}
+          alt={item.name}
+          style={{
+            width: "100%",
+            objectFit: "cover",
+            height: "100%",
+            minHeight: "300px",
+          }}
+        />
       </div>
-      <Space w={20}/>
+      <Space w={20} />
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <div>
           <Text fz="sm" fw={500}>
             {item.name}
           </Text>
-          <Space h={5}/>
+          <Space h={5} />
           <Badge color={jobColors[item.category]} variant="light">
             {item.category}
           </Badge>
         </div>
-        <Space h={5}/>
+        <Space h={5} />
         <div>
-        <Text fz="sm" fw={500}>Price:</Text> 
+          <Text fz="sm" fw={500}>
+            Description:
+          </Text>
+          <Text fz="sm">{item.description}</Text>
+        </div>
+        <Space h={5} />
+        <div>
+          <Text fz="sm" fw={500}>
+            Price:
+          </Text>
           <Anchor component="button" size="sm">
-        {item.price}
+            {item.price}
           </Anchor>
         </div>
-        <Space h={5}/>
+        <Space h={5} />
         <div>
-        <Text fz="sm" fw={500}>Quantity:</Text> 
+          <Text fz="sm" fw={500}>
+            Quantity:
+          </Text>
           <Text fz="sm">{item.quantity}</Text>
-        </div>
-        <div>
-          {item.removalReason && (
-            <Badge color="red" variant="light">
-              Blacklisted
-            </Badge>
-          )}
         </div>
       </div>
     </div>
   </Modal>
 );
-
-
 
 const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
   const navigate = useNavigate();
@@ -150,19 +112,27 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
   const [reason, setReason] = useState("");
   const [itemId, setItemId] = useState("");
   const [searchParams] = useSearchParams();
-
-  const currentPage = !searchParams.get("page")
-    ? 1
-    : Number(searchParams.get("page"));
-
-  const [activePage, setActivePage] = useState(currentPage);
+  const [filter, setFilter] = useState("");
+  const [filteredData, setFilteredData] = useState<Item[][]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const { itemsAll, isLoading: isLoadingItems } = useGetAllItems()!;
-  const { allNonBlacklistItems, isLoading: isLoadingNonBlacklistItems } = useGetAllNonBlacklistItem()!;
-  
-  const totalItems = itemsAll?.data;
+  const {
+    allNonBlacklistItems,
+    isLoading: isLoadingNonBlacklistItems,
+  } = useGetAllNonBlacklistItem()!;
 
-  const data2 = totalItems ? chunk(totalItems, 10) : [];
+  const nonblacklisteditems = allNonBlacklistItems?.data;
+  let totalItems = itemsAll?.data;
+
+  useEffect(() => {
+    if (!totalItems) return;
+    const filteredItems = totalItems.filter((item: any) =>
+      item.name.toLowerCase().includes(filter.toLowerCase())
+    );
+    setFilteredData(chunk(filteredItems, 10));
+    setCurrentPage(1); // Reset to the first page when filter changes
+  }, [totalItems, filter]);
 
   const currentUser = JSON.parse(localStorage.getItem("user")!);
   const { isPending, createBlacklist } = useBlacklistItem();
@@ -182,10 +152,129 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
     open();
   };
 
-  const rows = data2[activePage - 1]?.map((item: any) => (
+  const generateImageUrl = (name: string) => {
+    const firstLetters = name.slice(0, 5).toUpperCase();
+    const randomColor =
+      "#" + Math.floor(Math.random() * 16777215).toString(16);
+    const imageUrl = `https://dummyimage.com/300x300/${randomColor}/ffffff&text=${firstLetters}`;
+    return imageUrl;
+  };
+
+  const ItemCard = ({
+    item,
+    navigate,
+    openModal,
+  }: {
+    item: Item;
+    navigate: any;
+    openModal: (id: string) => void;
+  }) => {
+    const isBlacklisted =
+      nonblacklisteditems &&
+      nonblacklisteditems.find((i: Item) => i.id === item.id);
+    const opacity = isBlacklisted ? 1 : 0.5;
+
+    return (
+      <Card
+        shadow="xs"
+        padding="md"
+        style={{
+          marginBottom: "20px",
+          width: "250px",
+          height: "300px",
+          transition: "transform 0.3s",
+          cursor: "pointer",
+          opacity: opacity,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = "scale(1.05)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "scale(1)";
+        }}
+        onClick={() => {
+          if (!isBlacklisted) {
+            navigate(`/item/${item.id}`);
+          } else {
+            openModal(item.id);
+          }
+        }}
+      >
+        <div style={{ height: "70%", overflow: "hidden" }}>
+          {item.imageUrl && isUrlValid(item.imageUrl) ? (
+            <img
+              src={item.imageUrl}
+              alt={item.name}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                background: generateBackground(item.name),
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "50px",
+                  color: "#666",
+                  textTransform: "uppercase",
+                }}
+              >
+                {item.name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
+        </div>
+        <Space h={10} />
+        <div
+          style={{
+            height: "30%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <Text fz="sm" fw={500}>
+              {item.name}
+            </Text>
+            <Space h={5} />
+            <Badge color={jobColors[item.category]} variant="light">
+              {item.category}
+            </Badge>
+          </div>
+          <div>
+            {!isBlacklisted && (
+              <Badge color="red" variant="light">
+                Blacklisted
+              </Badge>
+            )}
+          </div>
+        </div>
+      </Card>
+    );
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    navigate(`?page=${page}`);
+  };
+
+  const generateBackground = (name: string) => {
+    const firstLetters = name.slice(0, 5).toUpperCase();
+    const randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+    return randomColor;
+  };
+
+  const rows = filteredData[currentPage - 1]?.map((item: any) => (
     <ItemCard
       key={item.id}
-      item={item}
+      item={{ ...item, imageUrl: item.imageUrl || generateImageUrl(item.name) }}
       navigate={navigate}
       openModal={openModal}
     />
@@ -193,19 +282,41 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
 
   return (
     <div style={{ padding: "0 10px" }}>
-    
-      <div style={{ marginBottom: "20px", display: "flex", flexWrap: "wrap", gap: "20px" }}>{rows}</div>
+      <Center>
+        <InputBase
+          type="text"
+          placeholder="Search..."
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          style={{ marginBottom: "20px", width: "50%" }}
+        />
+      </Center>
+      <div
+        style={{
+          marginBottom: "20px",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "40px",
+        }}
+      >
+        {rows}
+      </div>
 
       <Center ml={"-100"}>
         <Pagination
           total={totalPages}
-          value={activePage}
-          onChange={setActivePage}
+          value={currentPage}
+          onChange={handlePageChange}
           mt="sm"
         />
       </Center>
 
-      {opened && <ItemDescription item={totalItems.find((item: Item) => item.id === itemId)!} close={close} />}
+      {opened && (
+        <ItemDescription
+          item={totalItems.find((item: Item) => item.id === itemId)!}
+          close={close}
+        />
+      )}
 
       <Modal
         opened={opened}
@@ -248,9 +359,17 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
           Add
         </Button>
       </Modal>
-
     </div>
   );
 };
+
+function isUrlValid(url: string) {
+  try {
+    new URL(url);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
 
 export default ItemsonDashboard;
