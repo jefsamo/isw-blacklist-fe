@@ -9,14 +9,14 @@ import {
   TextInput,
   Select,
 } from "@mantine/core";
-import { useCreateItem } from "../../hooks/useCreateItem";
+import { useCreateblacklistItem } from "../../hooks/useCreateblacklistItem";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../constants";
 import { useGetCategories } from "../../hooks/useGetCategories";
 
 const CreateblacklistItem = () => {
-  const { isPending, createItem } = useCreateItem();
+  const { isPending, createblacklistItem } = useCreateblacklistItem();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0);
@@ -27,16 +27,21 @@ const CreateblacklistItem = () => {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [reason, setReason] = useState("");
+  const [categoryExists, setCategoryExists] = useState(false);
   const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem("user")!);
 
+  const { getCategory } = useGetCategories();
 
-  const { getCategory } = useGetCategories ()!;
+  const totalItems = ["NEWCATEGORY", ...(getCategory?.data || [])];
 
-  const totalItems = getCategory?.data || [];
+  useEffect(() => {
+    setCategoryExists(totalItems.map(cat => cat.toLowerCase()).includes(newCategory.toLowerCase()));
+  }, [newCategory, getCategory]);
 
-  const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setImageUrl(e.target.value);
+  const handleImageUrlChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => setImageUrl(e.target.value);
 
   const handleUpload = async () => {
     if (file) {
@@ -69,24 +74,25 @@ const CreateblacklistItem = () => {
   ) => {
     e.preventDefault();
 
-    if (!name || !description || !price || !category || !quantity || !imageUrl)
+    if (!name || !description || !price || !category || !quantity || !imageUrl || !reason)
       return;
 
-    createItem(
+    createblacklistItem(
       {
-        category: category === "Other" ? newCategory : category,
+        category: category === "NEWCATEGORY" ? newCategory : category,
         description,
         imageUrl,
         name,
         price,
         quantity,
         token: currentUser?.jwToken,
+        reason: reason 
       },
-      {
+      {/*{
         onSettled: () => {
           navigate("/items");
         },
-      }
+      }*/}
     );
   };
 
@@ -115,24 +121,26 @@ const CreateblacklistItem = () => {
       />
       <Space h={10} />
       <Select
-       label="Category"
-       placeholder="Select category"
-  value={totalItems}
-  onChange={(value) => setCategory(value as string)}
-  data={totalItems.map((categoryName:any) => ({
-    value: categoryName,
-    label: categoryName,
-  }))}
-/>
-<p>{totalItems}</p>
-      {category === "Other" && (
+        label="Category"
+        placeholder="Select category"
+        value={category}
+        onChange={(value) => setCategory(value as string)}
+        data={totalItems.map((categoryName: any) => ({
+          value: categoryName,
+          label: categoryName,
+        }))}
+      />
+      {category === "NEWCATEGORY" && (
         <>
           <Space h={10} />
           <InputBase
-            label="Enter New Category"
+            label={categoryExists ? "Category Already Exists" : "Enter New Category"}
             placeholder="New Category"
             value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
+            onChange={(e) => {
+              setNewCategory(e.target.value);
+              setCategoryExists(totalItems.map(cat => cat.toLowerCase()).includes(e.target.value.toLowerCase()));
+            }}
           />
         </>
       )}
@@ -193,7 +201,7 @@ const CreateblacklistItem = () => {
 
       <Space h={10} />
       <Button loading={isPending} onClick={handleCreateItem}>
-        Add Item
+        Add New Blacklist Item
       </Button>
     </div>
   );

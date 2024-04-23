@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createItem as createItemApi } from "../services/apiItems";
+import { useBlacklistItem } from "./useBlacklistItem";
 import { toast } from "react-hot-toast";
-// import { useNavigate } from "react-router-dom";
 
 type CreateItemType = {
   name: string;
@@ -11,13 +11,13 @@ type CreateItemType = {
   category: string;
   imageUrl: string;
   token: string;
+  reason:string;
 };
 
-export const useCreateItem = () => {
+export const useCreateblacklistItem = () => {
   const queryClient = useQueryClient();
-  // const navigate = useNavigate();
-
-  const { isPending, mutate: createItem } = useMutation({
+  const { isPending, createBlacklist } = useBlacklistItem();
+  const { mutate: createblacklistItem } = useMutation({
     mutationFn: async ({
       token,
       name,
@@ -26,6 +26,7 @@ export const useCreateItem = () => {
       imageUrl,
       price,
       quantity,
+      reason
     }: CreateItemType) => {
       const item = await createItemApi({
         token,
@@ -36,14 +37,24 @@ export const useCreateItem = () => {
         price,
         quantity,
       });
-      return item;
+      const id = item.data.id;
+
+      
+      await createBlacklist({
+        itemId: id, // Use the id of the created item
+        reason: reason,
+        token: token,
+      });
+
+      return id;
     },
     onSuccess: () => {
-      toast.success("Item created sucessfully");
+      toast.success(`Item created successfully`);
+
+      // Invalidate item query
       queryClient.invalidateQueries({
         queryKey: ["items-all"],
       });
-      // navigate("/items");
     },
     onError: (err) => {
       console.log("Error", err);
@@ -51,5 +62,5 @@ export const useCreateItem = () => {
     },
   });
 
-  return { isPending, createItem };
+  return { isPending, createblacklistItem };
 };

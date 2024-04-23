@@ -64,7 +64,6 @@ export const getCategories = async (token: string) => {
   
 };
 
-
 export const createItem = async ({
   category,
   description,
