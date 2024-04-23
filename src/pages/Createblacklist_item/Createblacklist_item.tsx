@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Badge,
   Button,
@@ -13,6 +13,7 @@ import { useCreateItem } from "../../hooks/useCreateItem";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../constants";
+import { useGetCategories } from "../../hooks/useGetCategories";
 
 const CreateblacklistItem = () => {
   const { isPending, createItem } = useCreateItem();
@@ -28,6 +29,11 @@ const CreateblacklistItem = () => {
   const [reason, setReason] = useState("");
   const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem("user")!);
+
+
+  const { getCategory } = useGetCategories ()!;
+
+  const totalItems = getCategory?.data || [];
 
   const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setImageUrl(e.target.value);
@@ -109,18 +115,17 @@ const CreateblacklistItem = () => {
       />
       <Space h={10} />
       <Select
-        label="Category"
-        placeholder="Select category"
-        value={category}
-        onChange={(value) => setCategory(value as string)}
-        data={[
-          { value: "new_category", label: "new_category" },
-          { value: "Electronics", label: "Electronics" },
-          { value: "Clothing", label: "Clothing" },
-          { value: "Books", label: "Books" },
-        ]}
-      />
-      {category === "new_category" && (
+       label="Category"
+       placeholder="Select category"
+  value={totalItems}
+  onChange={(value) => setCategory(value as string)}
+  data={totalItems.map((categoryName:any) => ({
+    value: categoryName,
+    label: categoryName,
+  }))}
+/>
+<p>{totalItems}</p>
+      {category === "Other" && (
         <>
           <Space h={10} />
           <InputBase
@@ -131,7 +136,7 @@ const CreateblacklistItem = () => {
           />
         </>
       )}
-     <Space h={10} />
+      <Space h={10} />
       <InputBase
         label="Reason for Blacklisting"
         placeholder="Reason for blacklisting..."

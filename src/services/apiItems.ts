@@ -46,6 +46,25 @@ export const getAllItems = async (token: string) => {
   return res.data;
 };
 
+
+export const getCategories = async (token: string) => {
+  try {
+  const res = await axios.get(`${BASE_URL}/items/categories`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return res.data;
+}
+  catch (error) {
+    console.error("Error fetching categories:", error);
+  }
+  
+};
+
+
 export const createItem = async ({
   category,
   description,
