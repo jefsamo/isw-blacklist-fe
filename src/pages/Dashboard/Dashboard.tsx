@@ -40,7 +40,7 @@ const Dashboard = () => {
        
         <StatsGrid />
         <Space h="md" />
-        <ItemsonDashboard filter={filter} />
+        <ItemsonDashboard filter={filter}/>
       </div>
     </>
   );
