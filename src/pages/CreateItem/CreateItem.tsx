@@ -41,7 +41,7 @@ const CreateItem = () => {
 
       try {
         setIsUploading(true);
-        const response = await axios.post<{ url: string }>(
+        const response = await axios.put<{ url: string }>(
           `${BASE_URL}/items/photo`,
           formData,
           {
