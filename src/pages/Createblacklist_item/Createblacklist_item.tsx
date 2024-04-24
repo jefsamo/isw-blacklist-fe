@@ -10,7 +10,6 @@ import {
   Select,
 } from "@mantine/core";
 import { useCreateblacklistItem } from "../../hooks/useCreateblacklistItem";
-//import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../constants";
 import { useGetCategories } from "../../hooks/useGetCategories";

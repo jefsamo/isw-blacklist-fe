@@ -9,7 +9,6 @@ import {
   Center,
   Loader,
   Space,
-  InputBase,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -42,22 +41,48 @@ type Item = {
   description:string
 };
 
-type ItemsonDashboardProps = {};
+type ItemsonDashboardProps = {
+  filter: string;
+};
+
+
+const generateBackground = () => {
+  const randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+  return randomColor;
+};
 
 const ItemDescription = ({ item, close }: { item: Item; close: () => void }) => (
   <Modal opened={true} onClose={close} title={item.name} centered size="55%">
     <div style={{ display: "flex" }}>
       <div style={{ flex: 1, height: "100%", overflow: "hidden" }}>
-        <img
-          src={item.imageUrl}
-          alt={item.name}
-          style={{
-            width: "100%",
-            objectFit: "cover",
-            height: "100%",
-            minHeight: "300px",
-          }}
-        />
+      {item.imageUrl && isUrlValid(item.imageUrl) ? (
+            <img
+              src={item.imageUrl}
+              alt={item.name}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                background: generateBackground(),
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "50px",
+                  color: "#666",
+                  textTransform: "uppercase",
+                }}
+              >
+                {item.name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
       </div>
       <Space w={20} />
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -98,12 +123,12 @@ const ItemDescription = ({ item, close }: { item: Item; close: () => void }) => 
   </Modal>
 );
 
-const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
+const ItemsonDashboard: React.FC<ItemsonDashboardProps> = ({filter}) => {
   const navigate = useNavigate();
   const [opened, { open, close }] = useDisclosure(false);
   const [itemId, setItemId] = useState("");
   const [searchParams] = useSearchParams();
-  const [filter, setFilter] = useState("");
+ // const [filter, setFilter] = useState("");
   const [filteredData, setFilteredData] = useState<Item[][]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -264,15 +289,7 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
 
   return (
     <div style={{ padding: "0 10px" }}>
-      <Center>
-        <InputBase
-          type="text"
-          placeholder="Search..."
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          style={{ marginBottom: "20px", width: "50%" }}
-        />
-      </Center>
+      
       <div
         style={{
           marginBottom: "20px",
