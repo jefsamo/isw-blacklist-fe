@@ -1,5 +1,6 @@
 import { Space } from "@mantine/core";
 import { StatsGrid } from "./StatsGrid";
+import ItemsonDashboard from "@pages/Items/Itemsondashboard";
 
 const Dashboard = () => {
   return (
@@ -15,6 +16,7 @@ const Dashboard = () => {
         </h3>
         <StatsGrid />
         <Space h="md" />
+        <ItemsonDashboard />
         {/* <Chart /> */}
       </div>
     </>

@@ -4,6 +4,7 @@ import {
   IconLogout,
   IconDashboard,
   IconListDetails,
+  IconEyePlus,
   IconEditCircle,
 } from "@tabler/icons-react";
 import { Text } from "@mantine/core";
@@ -14,6 +15,7 @@ import classes from "@pages/Dashboard/Dashboard.module.css";
 const data = [
   { link: "dashboard", label: "Dashboard", icon: IconDashboard },
   { link: "items", label: "All Items", icon: IconListDetails },
+  { link: "CreateblacklistItem", label: "New Blacklist Item", icon: IconEyePlus },
   { link: "blacklist", label: "Manage Blacklist", icon: IconEditCircle },
 ];
 
