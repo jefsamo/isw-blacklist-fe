@@ -9,7 +9,6 @@ import {
   Center,
   Loader,
   Space,
-  InputBase,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -42,7 +41,10 @@ type Item = {
   description:string
 };
 
-type ItemsonDashboardProps = {};
+type ItemsonDashboardProps = {
+  filter: string;
+};
+
 
 const generateBackground = () => {
   const randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
@@ -121,12 +123,12 @@ const ItemDescription = ({ item, close }: { item: Item; close: () => void }) => 
   </Modal>
 );
 
-const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
+const ItemsonDashboard: React.FC<ItemsonDashboardProps> = ({filter}) => {
   const navigate = useNavigate();
   const [opened, { open, close }] = useDisclosure(false);
   const [itemId, setItemId] = useState("");
   const [searchParams] = useSearchParams();
-  const [filter, setFilter] = useState("");
+ // const [filter, setFilter] = useState("");
   const [filteredData, setFilteredData] = useState<Item[][]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -287,15 +289,7 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
 
   return (
     <div style={{ padding: "0 10px" }}>
-      <Center>
-        <InputBase
-          type="text"
-          placeholder="Search..."
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          style={{ marginBottom: "20px", width: "50%" }}
-        />
-      </Center>
+      
       <div
         style={{
           marginBottom: "20px",
