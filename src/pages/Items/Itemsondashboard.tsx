@@ -44,20 +44,43 @@ type Item = {
 
 type ItemsonDashboardProps = {};
 
+const generateBackground = () => {
+  const randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+  return randomColor;
+};
+
 const ItemDescription = ({ item, close }: { item: Item; close: () => void }) => (
   <Modal opened={true} onClose={close} title={item.name} centered size="55%">
     <div style={{ display: "flex" }}>
       <div style={{ flex: 1, height: "100%", overflow: "hidden" }}>
-        <img
-          src={item.imageUrl}
-          alt={item.name}
-          style={{
-            width: "100%",
-            objectFit: "cover",
-            height: "100%",
-            minHeight: "300px",
-          }}
-        />
+      {item.imageUrl && isUrlValid(item.imageUrl) ? (
+            <img
+              src={item.imageUrl}
+              alt={item.name}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                background: generateBackground(),
+              }}
+            >
+              <span
+                style={{
+                  fontSize: "50px",
+                  color: "#666",
+                  textTransform: "uppercase",
+                }}
+              >
+                {item.name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
       </div>
       <Space w={20} />
       <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
