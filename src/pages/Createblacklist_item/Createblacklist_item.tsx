@@ -42,7 +42,7 @@ const CreateblacklistItem = () => {
   const handleImageUrlChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => setImageUrl(e.target.value);
-
+ 
   const handleUpload = async () => {
     if (file) {
       const formData = new FormData();
@@ -50,7 +50,7 @@ const CreateblacklistItem = () => {
 
       try {
         setIsUploading(true);
-        const response = await axios.post<{ url: string }>(
+        const response = await axios.put<{ url: string }>(
           `${BASE_URL}/items/photo`,
           formData,
           {
@@ -59,7 +59,7 @@ const CreateblacklistItem = () => {
               Authorization: `Bearer ${currentUser?.jwToken}`,
             },
           }
-        );
+        ); console.log(response)
         setIsUploading(false);
         setImageUrl(response.data.url);
       } catch (error) {
