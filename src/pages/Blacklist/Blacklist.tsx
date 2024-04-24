@@ -63,7 +63,7 @@ const Blacklist = () => {
   
               removeBlacklist(
                 {
-                  blacklistItemId: blacklistItemId || '', // Providing a default value
+                  blacklistItemId: blacklistItemId || '',
                   reason,
                   token: currentUser?.jwToken,
                 },

@@ -149,7 +149,7 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = ({filter}) => {
     );
     setFilteredData(chunk(filteredItems, 12));
     setCurrentPage(1); // Reset to the first page when filter changes
-    setTotalPages(Math.ceil(filteredItems.length / 12)); // Recalculate total pages
+    setTotalPages(Math.ceil(filteredItems.length / 12));
   }, [totalItems, filter]);
 
 
