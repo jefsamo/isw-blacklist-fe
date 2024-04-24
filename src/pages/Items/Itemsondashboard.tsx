@@ -1,16 +1,10 @@
 import React, { useState, useEffect } from "react";
 import {
-  Avatar,
   Badge,
   Card,
-  Group,
   Text,
-  ActionIcon,
   Anchor,
-  rem,
   Modal,
-  Textarea,
-  Button,
   Pagination,
   Center,
   Loader,
@@ -18,10 +12,7 @@ import {
   InputBase,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { IconPencil, IconArchive } from "@tabler/icons-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useItems } from "../../hooks/useItems";
-import { useBlacklistItem } from "../../hooks/useBlacklistItem";
 import { useGetAllNonBlacklistItem } from "../../hooks/useGetAllNonBlacklistItem";
 import { useGetAllItems } from "../../hooks/useGetAllItems";
 
@@ -48,6 +39,7 @@ type Item = {
   price: string;
   quantity: number;
   removalReason?: string;
+  description:string
 };
 
 type ItemsonDashboardProps = {};
@@ -109,7 +101,6 @@ const ItemDescription = ({ item, close }: { item: Item; close: () => void }) => 
 const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
   const navigate = useNavigate();
   const [opened, { open, close }] = useDisclosure(false);
-  const [reason, setReason] = useState("");
   const [itemId, setItemId] = useState("");
   const [searchParams] = useSearchParams();
   const [filter, setFilter] = useState("");
@@ -131,15 +122,11 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
     const filteredItems = totalItems.filter((item: any) =>
       item.name.toLowerCase().includes(filter.toLowerCase())
     );
-    setFilteredData(chunk(filteredItems, 10));
+    setFilteredData(chunk(filteredItems, 12));
     setCurrentPage(1); // Reset to the first page when filter changes
-    setTotalPages(Math.ceil(filteredItems.length / 10)); // Recalculate total pages
+    setTotalPages(Math.ceil(filteredItems.length / 12)); // Recalculate total pages
   }, [totalItems, filter]);
-  
-  //...
 
-  const currentUser = JSON.parse(localStorage.getItem("user")!);
-  const { isPending, createBlacklist } = useBlacklistItem();
 
   if (isLoadingItems || isLoadingNonBlacklistItems)
     return (
@@ -149,17 +136,20 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
     );
 
   const openModal = (id: string) => {
-    const item = totalItems.find((item: Item) => item.id === id);
     setItemId(id);
     open();
   };
 
-  const generateImageUrl = (name: string) => {
-    const firstLetters = name.slice(0, 5).toUpperCase();
-    const randomColor =
-      "#" + Math.floor(Math.random() * 16777215).toString(16);
-    const imageUrl = `https://dummyimage.com/300x300/${randomColor}/ffffff&text=${firstLetters}`;
-    return imageUrl;
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    const params = new URLSearchParams(searchParams);
+    params.set('page', String(page));
+    navigate(`?${params.toString()}`);
+  };
+  
+  const generateBackground = () => {
+    const randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
+    return randomColor;
   };
 
   const ItemCard = ({
@@ -196,7 +186,7 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
         }}
         onClick={() => {
           if (!isBlacklisted) {
-            navigate(`/item/${item.id}`);
+            navigate(`/blacklist/${item.id}`);
           } else {
             openModal(item.id);
           }
@@ -217,7 +207,7 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                background: generateBackground(item.name),
+                background: generateBackground(),
               }}
             >
               <span
@@ -262,25 +252,11 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
     );
   };
 
-  const handlePageChange = (page: number) => {
-    const here ='5'
-    setCurrentPage(page);
-    const params = new URLSearchParams(searchParams);
-    params.set('page', String(page));
-    navigate(`?${params.toString()}`);
-  };
-  
-
-  const generateBackground = (name: string) => {
-    const firstLetters = name.slice(0, 5).toUpperCase();
-    const randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
-    return randomColor;
-  };
 
   const rows = filteredData[currentPage - 1]?.map((item: any) => (
     <ItemCard
       key={item.id}
-      item={{ ...item, imageUrl: item.imageUrl || generateImageUrl(item.name) }}
+      item={item}
       navigate={navigate}
       openModal={openModal}
     />
@@ -323,48 +299,6 @@ const ItemsonDashboard: React.FC<ItemsonDashboardProps> = () => {
           close={close}
         />
       )}
-
-      <Modal
-        opened={opened}
-        onClose={close}
-        title="Reason for blacklist"
-        centered
-        size="55%"
-      >
-        <Textarea
-          placeholder="Reason..."
-          m="0 0 30 0"
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-        />
-        <Button
-          variant="filled"
-          style={{ display: "flex", marginLeft: "auto" }}
-          loading={isPending}
-          onClick={(e) => {
-            e.preventDefault();
-
-            if (!reason) return;
-
-            createBlacklist(
-              {
-                itemId: itemId,
-                reason: reason,
-                token: currentUser?.jwToken,
-              },
-              {
-                onSettled: () => {
-                  setReason("");
-                  close();
-                  navigate("/items");
-                },
-              }
-            );
-          }}
-        >
-          Add
-        </Button>
-      </Modal>
     </div>
   );
 };

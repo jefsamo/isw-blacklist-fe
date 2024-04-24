@@ -28,7 +28,7 @@ const CreateblacklistItem = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [reason, setReason] = useState("");
   const [categoryExists, setCategoryExists] = useState(false);
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem("user")!);
 
   const { getCategory } = useGetCategories();
