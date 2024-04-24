@@ -44,7 +44,7 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="blacklist" element={<Manage />} />
             <Route path="blacklist/:blacklistItemId" element={<Blacklist />} />
-            <Route path="itemsonDashboard" element={<ItemsonDashboard />} />
+            <Route path="itemsonDashboard" element={<ItemsonDashboard filter={''}  />} />
             <Route path="items" element={<Items />} />
             <Route path="item/:itemId" element={<Item />} />
             <Route path="users" element={<Users />} />
