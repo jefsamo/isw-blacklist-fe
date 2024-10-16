@@ -1,1 +1,1 @@
-export const BASE_URL = "https://iswblacklist-new.azurewebsites.net/api";
+export const BASE_URL = "http://www.interblacklist.somee.com/api";
