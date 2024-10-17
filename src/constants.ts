@@ -1,1 +1,1 @@
-export const BASE_URL = "http://www.interblacklist.somee.com/api";
+export const BASE_URL = "https://www.interblacklist.somee.com/api";
